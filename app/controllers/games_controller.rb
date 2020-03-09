@@ -4,6 +4,7 @@ require 'json'
 class GamesController < ApplicationController
   def new
     @letters = Array.new(10) { ('A'..'Z').to_a.sample }
+    session[:score] ||= 0
   end
 
   def english_word?(word)
@@ -13,18 +14,25 @@ class GamesController < ApplicationController
   end
 
   def score
-    @word = params[:word].upcase
-    letters = params[:letters]
+    word = params[:word]
+    letters = params[:letters].downcase
 
-    if @word.chars.all? { |l| @word.count(l) <= letters.count(l) }
-      if english_word?(@word)
-        @answer = "Congratulations! #{@word} is a valid English word!"
-      else
-        @answer = "Sorry but #{@word} does not seem to be a valid Enlgish word..."
+    if word.chars.all? { |l| word.count(l) <= letters.count(l) }
+      answer = "Sorry but #{word} does not seem to be a valid English word"
+      if english_word?(word)
+        answer = "Congratulations! #{word} is a valid English word!"
+        score = word.length**2
+        session[:score] += score
       end
     else
-      @answer = "Sorry but #{@word} can't be built out of #{letters}"
+      answer = "Sorry but #{word} can't be built out of #{letters}"
     end
-    @answer
+
+    @output = [answer, session[:score]]
+  end
+
+  def reset
+    reset_session
+    redirect_to new_path
   end
 end

@@ -1,4 +1,6 @@
 
-<p><%= @answer %></p>
+<p><%= @output[0] %></p>
+<p>Your score is <%= @output[1] %></p>
 
-<%= link_to "Play again", new_path %>
+<%= link_to "Play again", new_path %><br>
+<%= link_to "Reset game", reset_path  %>
